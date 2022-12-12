@@ -23,8 +23,11 @@ namespace utils {
         return demangle(typeid(T).name());
     }
 
+    static inline uint64_t get_max_number_v(uint32_t len) {
+        return (((1ULL * len * len) + len) * len) + len;
+    }
     static inline uint32_t zip_point(std::tuple<uint32_t, uint32_t, uint32_t> point, uint32_t offset) {
-        assert(1ULL * std::numeric_limits<uint32_t>::max() >= (((1ULL * offset * offset) + offset) * offset) + offset);
+        assert(1ULL * std::numeric_limits<uint32_t>::max() >= get_max_number_v(offset));
         assert(std::max(std::max(std::get<0>(point), std::get<1>(point)), std::get<2>(point)) < offset);
         return (((std::get<0>(point) * offset) + std::get<1>(point)) * offset) + std::get<2>(point);
     }

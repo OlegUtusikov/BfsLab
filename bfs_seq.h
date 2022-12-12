@@ -23,7 +23,6 @@ struct bfs_seq final {
     template<typename V, typename G>
     static result_t<V> bfs(V start, uint32_t n, const G &graph) {
         std::unordered_set<V> visited;
-        visited.reserve(n);
         std::vector<V> frontier(1, start);
         visited.insert(start);
 
@@ -35,12 +34,10 @@ struct bfs_seq final {
             res.emplace_back(std::move(frontier));
             for (const V &from: res.back()) {
                 auto edges = graph(from);
-                if (!edges.empty()) {
-                    for (V to: edges) {
-                        if (visited.find(to) == visited.end()) {
-                            visited.insert(to);
-                            new_frontier.emplace_back(to);
-                        }
+                for (V to: edges) {
+                    if (visited.count(to) == 0) {
+                        visited.insert(to);
+                        new_frontier.emplace_back(to);
                     }
                 }
             }

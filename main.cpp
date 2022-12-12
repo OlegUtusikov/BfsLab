@@ -20,7 +20,7 @@ double benchmark(uint32_t start,
                  size_t tries,
                  bool need_check = false,
                  typename Impl::template result_t<uint32_t> correct_ans = {}) {
-    std::cout << (need_check ? "Check: " : "Benchmark: ") << utils::demangle<Impl>() << ". Size: " << n << std::endl;
+    std::cout << (need_check ? "Check: " : "Benchmark: ") << utils::demangle<Impl>() << ". Max number v: " << n << std::endl;
 
     const auto dump_seconds = [need_check](const std::string &prefix, double time) {
         if (!need_check) {
@@ -63,7 +63,7 @@ double benchmark(uint32_t start,
 template<typename Impl1 = bfs_seq, typename Impl2 = bfs_par>
 void test_equal(uint32_t len = 100) {
     const auto g = [len] (uint32_t v) { return utils::get_cube_nbs(v, len); };
-    uint32_t n = len * len * len;
+    uint32_t n = utils::get_max_number_v(len);
     std::cout << "Start equal test. Size: " << n << std::endl;
     auto res1 = Impl1::bfs(0u, n, g);
     auto res2 = Impl2::bfs(0u, n, g);
@@ -83,7 +83,7 @@ int main() {
 
     benchmark<bfs_seq>(0ULL,
                        [](uint32_t v) { return utils::get_cube_nbs(v, 2u); },
-                       8u,
+                       get_max_number_v(2u),
                        1,
                        true,
                        {{zip_point({0u, 0u, 0u}, 2u)},
@@ -93,7 +93,7 @@ int main() {
 
     benchmark<bfs_par>(0ULL,
                        [](uint32_t v) { return utils::get_cube_nbs(v, 2u); },
-                       8u,
+                       get_max_number_v(2u),
                        1,
                        true,
                        {{zip_point({0u, 0u, 0u}, 2u)},
@@ -107,13 +107,14 @@ int main() {
 
     int tries = 5;
     uint32_t start = 0;
+    uint32_t len = 500;
     double avg_par = benchmark<bfs_par>(start,
-                                        [](uint32_t v) { return utils::get_cube_nbs(v, 500u); },
-                                        500 * 500 * 500,
+                                        [len](uint32_t v) { return utils::get_cube_nbs(v, len); },
+                                        get_max_number_v(len),
                                         tries);
     double avg_seq = benchmark<bfs_seq>(start,
-                                        [](uint32_t v) { return utils::get_cube_nbs(v, 500u); },
-                                        500 * 500 * 500,
+                                        [len](uint32_t v) { return utils::get_cube_nbs(v, len); },
+                                        get_max_number_v(len),
                                         tries);
     std::cout << "Speed up with std: " << avg_seq / avg_par << std::endl;
 }

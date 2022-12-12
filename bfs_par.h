@@ -10,7 +10,6 @@
 #include <parlay/parallel.h>
 #include <parlay/primitives.h>
 #include <parlay/sequence.h>
-#include <parlay/random.h>
 #include "utils.h"
 
 struct bfs_par final {
@@ -23,7 +22,7 @@ struct bfs_par final {
 
     template<typename V, typename G>
     static result_t<V> bfs(V start, uint32_t n, const G &graph) {
-        auto visited = parlay::tabulate<std::atomic<bool>>(n, [&](long i) {
+        auto visited = parlay::tabulate<std::atomic<bool>>(n, [&](uint32_t i) {
             return i == start;
         });
 
